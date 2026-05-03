@@ -1,53 +1,51 @@
 #ifndef BST_H
 #define BST_H
 
-#include "Barang.h"
+#include "barang.h"
 #include <string>
 #include <vector>
 using namespace std;
 
-//  Fulfillo — Binary Search Tree (BST)
-//  Under Responsibility of Heiza
-//  BST ini dipake untuk pencarian barang dengan cepat.
-//  Tree diurutkan berdasarkan NAMA barang (alphabetical) bukan numerik ya anak anak.
-//  Untuk search by ID, pakai fungsi searchById().
+// ======================== NODE ========================
 
 struct BSTNode {
-    Barang  data;
+    Barang data;
     BSTNode* left;
     BSTNode* right;
 
     BSTNode(Barang b) : data(b), left(nullptr), right(nullptr) {}
 };
 
+// ======================== CLASS BST ========================
+
 class BST {
 private:
     BSTNode* root;
 
-    // Helper functions (private, dipanggil internal)
+    // Helper (internal)
     BSTNode* insertHelper(BSTNode* node, Barang barang);
     BSTNode* deleteHelper(BSTNode* node, string nama);
     BSTNode* findMin(BSTNode* node);
-    void     inorderHelper(BSTNode* node, vector<Barang>& result);
-    void     clearHelper(BSTNode* node);
+    void inorderHelper(BSTNode* node, vector<Barang>& result);
+    void clearHelper(BSTNode* node);
     BSTNode* searchByNameHelper(BSTNode* node, string nama);
-    void     searchByKeywordHelper(BSTNode* node, string keyword, vector<Barang>& result);
+    void searchByKeywordHelper(BSTNode* node, string keyword, vector<Barang>& result);
 
 public:
     BST();
     ~BST();
 
-    // CRUD pada tree
-    void    insert(Barang barang);
-    void    remove(string nama);
-    void    update(string nama, Barang barangBaru);
+    // CRUD
+    void insert(Barang barang);
+    void remove(string nama);
+    void update(string nama, Barang barangBaru);
 
-    // Pencarian
-    Barang* searchByName(string nama);        // Exact match
-    Barang* searchById(int id);               // Search by ID (traversal)
-    vector<Barang> searchByKeyword(string keyword); // Partial match
+    // Search
+    Barang* searchByName(string nama);
+    Barang* searchById(int id);
+    vector<Barang> searchByKeyword(string keyword);
 
-    // Traversal — kembaliin semua barang urut alfabetical
+    // Traversal
     vector<Barang> inorder();
 
     // Utility

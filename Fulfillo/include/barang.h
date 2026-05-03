@@ -4,18 +4,20 @@
 #include <string>
 using namespace std;
 
+// ======================== KONSTANTA ========================
 
-//  Fulfillo — Struct Barang
-//  main struct
-//  Jangan ubah field tbtb anj
+const int MAX_TRANSAKSI = 200;
+
+// ======================== STRUCT BARANG ========================
+// Fulfillo — Struct Barang (gabungan final, jangan ubah field sembarangan)
 
 struct Barang {
-    int    id;          // UID barang (auto generate)
-    string nama;        // Nama barang
-    string kategori;    // Kategori (misal: "Packaging", "Equipment")
-    int    stok;        // Current stock value
-    double harga;       // Harga satuan
-    int    minStok;     // Batas minimum stok (untuk low stock warning)
+    int    id;          
+    string nama;        
+    string kategori;    
+    int    stok;        
+    double harga;       // pakai double (lebih fleksibel)
+    int    minStok;     
 
     // Constructor default
     Barang() : id(0), stok(0), harga(0.0), minStok(0) {}
@@ -25,10 +27,20 @@ struct Barang {
         : id(id), nama(nama), kategori(kategori),
           stok(stok), harga(harga), minStok(minStok) {}
 
-    // Cek apalah stock menipis
+    // Cek apakah stok menipis
     bool isLowStock() const {
         return stok <= minStok;
     }
+};
+
+// ======================== STRUCT TRANSAKSI ========================
+
+struct Transaksi {
+    int idBarang;
+    string namaBarang;
+    string jenis;   // "masuk" atau "keluar"
+    int jumlah;
+    string oleh;
 };
 
 #endif
