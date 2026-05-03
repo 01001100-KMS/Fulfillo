@@ -16,7 +16,7 @@ struct Barang {
     string nama;        
     string kategori;    
     int    stok;        
-    double harga;       // pakai double (lebih fleksibel)
+    double harga;
     int    minStok;     
 
     // Constructor default
