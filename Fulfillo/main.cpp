@@ -1,82 +1,109 @@
+#include "include/barang.h"
+#include "include/bst.h"
+#include "include/user.h"
+#include "include/dummy_data.h"
+#include "include/auth.h"
+#include "include/ui.h"
 #include <iostream>
-#include "include/Auth.h"
-#include "include/UI.h"
-#include "include/Inventory.h"
-#include "include/Report.h"
-
 using namespace std;
 
-int main() {
+// ======================== GLOBAL DATA ========================
+
+Transaksi transaksis[MAX_TRANSAKSI];
+int jmlTransaksi = 0;
+
+UserManager um;
+BST bst;
+User *aktif = nullptr;
+
+// ======================== MAIN ========================
+
+int main()
+{
+    // ================== 1. INISIALISASI ==================
+    loadDummyBarang(bst);
+    loadDummyUser(um);
+
     int pilihan;
-    // 1. Inisialisasi sistem
-    //    - Load data awal (dummy data / dari file)
-    //    - Setup struktur data (BST, Queue, Stack)
 
-    // 2. Tampil splash screen / nama app "Fulfillo"
+    // ================== 2. MENU LOGIN ==================
+    do
+    {
+        header(" SISTEM MANAJEMEN GUDANG ");
+        cout << "1. Login\n";
+        cout << "0. Keluar\n";
 
-    // 3. Login loop
-    //    - Tampilkan form login
-    //    - Validasi username & password
-    //    - Dapat role → Admin atau Staff
+        inputInt("Pilihan: ", pilihan);
 
-    // 4. Menu loop (berdasarkan role)
-    //    - Kalau Admin → tampil menu Admin
-    //    - Kalau Staff → tampil menu Staff
-    //    - Loop sampai user logout
-     do {
+        switch (pilihan)
+        {
+        case 1:
+            login(); // proses login (set user aktif)
+            break;
+
+        case 0:
+            cout << "Keluar dari aplikasi...\n";
+            break;
+
+        default:
+            cout << "[!] Pilihan tidak valid.\n";
+            jeda();
+        }
+
+    } while (pilihan != 0);
+
+    // ================== 3. MENU UTAMA (SETELAH LOGIN) ==================
+    // (Simulasi menu sistem Fulfillo)
+
+    int menu;
+    do
+    {
         system("cls");
 
         int totalBarang = 100;
         int lowStock = 5;
 
         tampilkanDashboard(totalBarang, lowStock);
-    
-        tampilkanMenu();  
-        cin >> pilihan;
+        tampilkanMenu();
+
+        cin >> menu;
+        cout << endl;
+
+        switch (menu)
+        {
+        case 1:
+            cout << ">> Login\n";
+            break;
+
+        case 2:
+            tampilkanListBarang();
+            break;
+
+        case 3:
+            tampilkanLowStock();
+            break;
+
+        case 4:
+            tampilkanLaporanStok();
+            break;
+
+        case 5:
+            tampilkanHistory();
+            break;
+
+        case 6:
+            cout << ">> Keluar...\n";
+            break;
+
+        default:
+            cout << ">> Pilihan tidak valid!\n";
+        }
 
         cout << endl;
 
-        switch(pilihan) {
-            case 1:
-                cout << ">> Login" << endl;
-                break;
+    } while (menu != 6);
 
-            case 2:
-                tampilkanListBarang();
-                break;
-
-            case 3:
-                tampilkanLowStock();
-                break;
-
-            case 4:
-                tampilkanLaporanStok();
-                break;
-
-            case 5:
-                tampilkanHistory();
-                break;
-
-            case 6:
-                cout << ">> Keluar..." << endl;
-                break;
-
-            default:
-                cout << ">> Pilihan tidak valid!" << endl;
-    }
-        cout << endl;
-
-    } while(pilihan != 6);
-
-    
-
-
-
-
-
-    // 5. Cleanup & exit
-    //    - Simpan data (kalau pakai file handling)
-    //    - Goodbye message
-
+    // ================== 4. PENUTUP ==================
+    cout << "Program selesai.\n";
     return 0;
 }

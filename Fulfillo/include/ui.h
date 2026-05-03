@@ -1,22 +1,38 @@
 #ifndef UI_H
 #define UI_H
 
-// menampilkan menu utama
-void tampilkanMenu();
+#include <string>
+using namespace std;
 
-// menampilkan dashboard (total & stok menipis)
+// ======================== HELPER ========================
+
+void header(string judul);
+void jeda();
+void inputInt(string pesan, int &var);
+
+// ======================== MENU UTAMA ========================
+
+void tampilkanMenu();
 void tampilkanDashboard(int totalBarang, int lowStock);
 
-// menampilkan daftar semua barang dalm bentuk tabel barang.txt
+// ======================== INVENTORY VIEW ========================
+
 void tampilkanListBarang();
-
-// menampilkan barang dengan stok rendah saja
 void tampilkanLowStock();
-
-// menampilkan laporan stok lengkap
 void tampilkanLaporanStok();
-
-// menampilkan riwayat transaksi
 void tampilkanHistory();
 
+// ======================== USER ========================
+
+void daftarUser();
+void registrasi();
+void hapusUser();
+
+// ======================== MENU ROLE ========================
+
+void menuAdmin();
+void menuStaff();
+
+// ======================= Something  ========================
+void inputDouble(string pesan, double &var);
 #endif

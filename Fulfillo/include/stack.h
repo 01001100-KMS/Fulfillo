@@ -46,7 +46,7 @@ class Stack {
 private:
     StackNode* top;
     int        size;
-    int        maxSize;  // Batas maksimal history (default: 20)
+    int        maxSize;  // Batas maksimal history (def: 20)
 
 public:
     Stack(int maxSize = 20);
