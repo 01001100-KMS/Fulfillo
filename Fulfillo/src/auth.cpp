@@ -2,7 +2,6 @@
 #include "../include/bst.h"
 #include "../include/ui.h"
 #include "../include/user.h"
-#include "../src/ui.cpp"
 #include <iostream>
 #include <iomanip>
 #include <limits>
