@@ -44,23 +44,6 @@ void garis()
         cout << "=";
     cout << "\n";
 }
-
-// Cetak judul menu dengan header
-void header(const string &judul)
-{
-    garis();
-    cout << setw(30 + judul.size() / 2) << judul << "\n";
-    garis();
-}
-
-// Berhenti sementara sampai user menekan Enter
-void jeda()
-{
-    cout << "\nEnter untuk melanjutkan...";
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    cin.get();
-}
-
 // Periksa apakah semua karakter string adalah angka
 bool semuaAngka(const string &s)
 {

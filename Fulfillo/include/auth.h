@@ -9,10 +9,6 @@ using namespace std;
 // ======================== UTILITAS ========================
 
 string roleStr(Role r);
-void inputInt(const string &prompt, int &hasil);
-void garis();
-void header(const string &judul);
-void jeda();
 bool semuaAngka(const string &s);
 bool semuaAlphanumeric(const string &s);
 

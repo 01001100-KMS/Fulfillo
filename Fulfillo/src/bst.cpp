@@ -1,4 +1,4 @@
-#include "../include/BST.h"
+#include "../include/bst.h"
 
 #include <algorithm>
 #include <iostream>
@@ -14,42 +14,99 @@ BSTNode::BSTNode(const Barang& b)
 
 // ======================== CONSTRUCTOR ========================
 
-BST::BST() : root(nullptr) {}
+BST::BST()
+    : root(nullptr),
+      size(0)
+{
+}
 
-BST::~BST() {
+BST::~BST()
+{
     clear();
+}
+
+
+// ======================== INORDER ========================
+
+void BST::inorderHelper(
+    BSTNode* node,
+    vector<Barang>& result)
+{
+    if (node == nullptr)
+        return;
+
+    inorderHelper(node->left, result);
+
+    result.push_back(node->data);
+
+    inorderHelper(node->right, result);
+}
+
+void BST::inorder(
+    BSTNode* node,
+    Barang arr[],
+    int& idx)
+{
+    if (node == nullptr)
+        return;
+
+    inorder(node->left, arr, idx);
+
+    arr[idx++] = node->data;
+
+    inorder(node->right, arr, idx);
+}
+
+vector<Barang> BST::inorder()
+{
+    vector<Barang> result;
+
+    inorderHelper(root, result);
+
+    return result;
 }
 
 
 // ======================== INSERT ========================
 
-BSTNode* BST::insertHelper(BSTNode* node,
-                           const Barang& barang)
+BSTNode* BST::insertHelper(
+    BSTNode* node,
+    const Barang& barang)
 {
-    if (node == nullptr) {
+    if (node == nullptr)
+    {
         return new BSTNode(barang);
     }
 
     string namaBaru = barang.nama;
     string namaNode = node->data.nama;
 
-    transform(namaBaru.begin(), namaBaru.end(),
-              namaBaru.begin(), ::tolower);
+    transform(
+        namaBaru.begin(),
+        namaBaru.end(),
+        namaBaru.begin(),
+        ::tolower
+    );
 
-    transform(namaNode.begin(), namaNode.end(),
-              namaNode.begin(), ::tolower);
+    transform(
+        namaNode.begin(),
+        namaNode.end(),
+        namaNode.begin(),
+        ::tolower
+    );
 
-    if (namaBaru < namaNode) {
+    if (namaBaru < namaNode)
+    {
         node->left =
             insertHelper(node->left, barang);
     }
-    else if (namaBaru > namaNode) {
+    else if (namaBaru > namaNode)
+    {
         node->right =
             insertHelper(node->right, barang);
     }
-    else {
-
-        // Update stok kalau nama sama
+    else
+    {
         node->data.stok += barang.stok;
 
         cout << "[BST] Barang sudah ada.\n";
@@ -61,6 +118,8 @@ BSTNode* BST::insertHelper(BSTNode* node,
 void BST::insert(const Barang& barang)
 {
     root = insertHelper(root, barang);
+
+    size++;
 }
 
 
@@ -68,7 +127,8 @@ void BST::insert(const Barang& barang)
 
 BSTNode* BST::findMin(BSTNode* node)
 {
-    while (node && node->left != nullptr) {
+    while (node && node->left != nullptr)
+    {
         node = node->left;
     }
 
@@ -78,8 +138,9 @@ BSTNode* BST::findMin(BSTNode* node)
 
 // ======================== DELETE ========================
 
-BSTNode* BST::deleteHelper(BSTNode* node,
-                           const string& nama)
+BSTNode* BST::deleteHelper(
+    BSTNode* node,
+    const string& nama)
 {
     if (node == nullptr)
         return nullptr;
@@ -87,24 +148,32 @@ BSTNode* BST::deleteHelper(BSTNode* node,
     string target = nama;
     string current = node->data.nama;
 
-    transform(target.begin(), target.end(),
-              target.begin(), ::tolower);
+    transform(
+        target.begin(),
+        target.end(),
+        target.begin(),
+        ::tolower
+    );
 
-    transform(current.begin(), current.end(),
-              current.begin(), ::tolower);
+    transform(
+        current.begin(),
+        current.end(),
+        current.begin(),
+        ::tolower
+    );
 
-    if (target < current) {
-
+    if (target < current)
+    {
         node->left =
             deleteHelper(node->left, nama);
     }
-    else if (target > current) {
-
+    else if (target > current)
+    {
         node->right =
             deleteHelper(node->right, nama);
     }
-    else {
-
+    else
+    {
         // Tidak punya anak
         if (node->left == nullptr &&
             node->right == nullptr)
@@ -140,8 +209,10 @@ BSTNode* BST::deleteHelper(BSTNode* node,
         node->data = successor->data;
 
         node->right =
-            deleteHelper(node->right,
-                         successor->data.nama);
+            deleteHelper(
+                node->right,
+                successor->data.nama
+            );
     }
 
     return node;
@@ -156,6 +227,8 @@ void BST::remove(const string& nama)
     }
 
     root = deleteHelper(root, nama);
+
+    size--;
 
     cout << "[BST] Barang berhasil dihapus.\n";
 }
@@ -173,21 +246,35 @@ BSTNode* BST::searchByNameHelper(
     string target = nama;
     string current = node->data.nama;
 
-    transform(target.begin(), target.end(),
-              target.begin(), ::tolower);
+    transform(
+        target.begin(),
+        target.end(),
+        target.begin(),
+        ::tolower
+    );
 
-    transform(current.begin(), current.end(),
-              current.begin(), ::tolower);
+    transform(
+        current.begin(),
+        current.end(),
+        current.begin(),
+        ::tolower
+    );
 
     if (target == current)
         return node;
 
     if (target < current)
+    {
         return searchByNameHelper(
-            node->left, nama);
+            node->left,
+            nama
+        );
+    }
 
     return searchByNameHelper(
-        node->right, nama);
+        node->right,
+        nama
+    );
 }
 
 Barang* BST::searchByName(
@@ -200,4 +287,46 @@ Barang* BST::searchByName(
         return nullptr;
 
     return &(result->data);
+    
+}
+
+// ======================== CLEAR ========================
+
+void BST::clearHelper(BSTNode* node)
+{
+    if (node == nullptr)
+        return;
+
+    clearHelper(node->left);
+
+    clearHelper(node->right);
+
+    delete node;
+}
+
+void BST::clear()
+{
+    clearHelper(root);
+
+    root = nullptr;
+
+    size = 0;
+}
+
+
+// ======================== SEARCH BY ID ========================
+
+Barang* BST::searchById(int id)
+{
+    vector<Barang> data = inorder();
+
+    for (auto &b : data)
+    {
+        if (b.id == id)
+        {
+            return searchByName(b.nama);
+        }
+    }
+
+    return nullptr;
 }

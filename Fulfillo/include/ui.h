@@ -3,7 +3,6 @@
 #define UI_H
 
 #include <string>
-
 // ======================== HELPER ========================
 
 void inputInt(std::string pesan, int& var);

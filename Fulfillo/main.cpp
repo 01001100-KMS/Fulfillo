@@ -4,7 +4,10 @@
 #include "include/dummy_data.h"
 #include "include/auth.h"
 #include "include/ui.h"
-#include "src/auth.cpp"
+#include "include/inventory.h"
+#include "include/report.h"
+#include "include/queue.h"
+#include "include/stack.h"
 #include <iostream>
 using namespace std;
 

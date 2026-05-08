@@ -1,6 +1,9 @@
 #include "../include/report.h"
 #include "../include/auth.h"
 #include "../include/bst.h"
+#include "../include/queue.h"
+#include "../include/stack.h"
+#include "../include/ui.h"
 #include <iostream>
 #include <iomanip>
 using namespace std;
