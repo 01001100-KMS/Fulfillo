@@ -1,15 +1,14 @@
 #ifndef STACK_H
 #define STACK_H
 
-#include "Barang.h"
+#include "barang.h"
 #include <string>
 using namespace std;
 
 // ============================================================
 //  Fulfillo — Stack (Undo System)
 //  Tanggung jawab: Orang A
-//  
-//  Command was made by AI (Yes again)
+//
 //  Stack ini menyimpan riwayat aksi yang dilakukan ADMIN.
 //  Setiap aksi (tambah, edit, hapus) di-push ke stack.
 //  Undo akan pop aksi terakhir dan membalikkan perubahan.
@@ -17,8 +16,10 @@ using namespace std;
 //  Hanya Admin yang bisa akses undo — cek role di UI.
 // ============================================================
 
-// Tipe aksi yang bisa di-undo
-enum AksiType {
+// ======================== ENUM AKSI ========================
+
+enum AksiType
+{
     TAMBAH_BARANG,
     HAPUS_BARANG,
     UPDATE_BARANG,
@@ -26,66 +27,70 @@ enum AksiType {
     KURANG_STOK
 };
 
-// Satu aksi yang disimpan di stack
-struct Aksi {
+inline string aksiTypeToString(AksiType tipe)
+{
+    switch (tipe)
+    {
+    case TAMBAH_BARANG: return "Tambah Barang";
+    case HAPUS_BARANG:  return "Hapus Barang";
+    case UPDATE_BARANG: return "Update Barang";
+    case TAMBAH_STOK:   return "Tambah Stok";
+    case KURANG_STOK:   return "Kurang Stok";
+    default:            return "Unknown";
+    }
+}
+
+// ======================== STRUCT AKSI ========================
+
+struct Aksi
+{
     AksiType tipe;
-    Barang   barangSebelum;  // State barang SEBELUM aksi (untuk undo)
-    Barang   barangSesudah;  // State barang SESUDAH aksi (untuk redo — minggu 2)
-    string   keterangan;     // Deskripsi aksi, misal: "Hapus Kardus Box L"
+    Barang   barangSebelum; // State barang SEBELUM aksi (untuk undo)
+    Barang   barangSesudah; // State barang SESUDAH aksi
+    string   keterangan;    // Deskripsi aksi, misal: "Hapus Kardus Box L"
 };
 
-// Node untuk linked list stack
-struct StackNode {
-    Aksi      data;
-    StackNode* next;
+// ======================== STACK NODE ========================
 
+struct StackNode
+{
+    Aksi       data;
+    StackNode *next;
     StackNode(Aksi a) : data(a), next(nullptr) {}
 };
 
-class Stack {
-private:
-    StackNode* top;
+// ======================== STACK ========================
+
+struct Stack
+{
+    StackNode *top;
     int        size;
-    int        maxSize;  // Batas maksimal history (def: 20)
+    int        maxSize;
 
-public:
-    Stack(int maxSize = 20);
-    ~Stack();
+    Stack(int maxSize = 20) : top(nullptr), size(0), maxSize(maxSize) {}
+    ~Stack() { clear(); }
 
-    // Operasi utama
-    void push(Aksi aksi);       // Tambah aksi ke stack
-    Aksi pop();                  // Ambil & hapus aksi teratas
-    Aksi peek();                 // Lihat aksi teratas tanpa hapus
+    bool isEmpty() { return top == nullptr; }
+    bool isFull()  { return size >= maxSize; }
+    int  getSize() { return size; }
 
-    // Utility
-    bool isEmpty();
-    bool isFull();
-    int  getSize();
+    void push(Aksi aksi);
+    Aksi pop();
+    Aksi peek();
+    void displayHistory();
     void clear();
-    void displayHistory();       // Tampilkan semua history aksi
 };
 
-// ── Helper: buat Aksi dengan mudah ──────────────────────────
+// ======================== HELPER ========================
 
-inline Aksi buatAksi(AksiType tipe, Barang sebelum, Barang sesudah, string ket) {
+inline Aksi buatAksi(AksiType tipe, Barang sebelum, Barang sesudah, string ket)
+{
     Aksi a;
-    a.tipe           = tipe;
-    a.barangSebelum  = sebelum;
-    a.barangSesudah  = sesudah;
-    a.keterangan     = ket;
+    a.tipe          = tipe;
+    a.barangSebelum = sebelum;
+    a.barangSesudah = sesudah;
+    a.keterangan    = ket;
     return a;
-}
-
-// Konversi AksiType ke string untuk ditampilkan
-inline string aksiTypeToString(AksiType tipe) {
-    switch (tipe) {
-        case TAMBAH_BARANG: return "Tambah Barang";
-        case HAPUS_BARANG:  return "Hapus Barang";
-        case UPDATE_BARANG: return "Update Barang";
-        case TAMBAH_STOK:   return "Tambah Stok";
-        case KURANG_STOK:   return "Kurang Stok";
-        default:            return "Unknown";
-    }
 }
 
 #endif

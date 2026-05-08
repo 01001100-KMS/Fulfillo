@@ -1,320 +1,457 @@
+
+// ======================== ui.cpp ========================
+
 #include "../include/ui.h"
+
 #include "../include/auth.h"
-#include "../src/auth.cpp"
 #include "../include/inventory.h"
 #include "../include/user.h"
+
 #include <iostream>
-#include <fstream>
 #include <iomanip>
 #include <limits>
 
 using namespace std;
 
+// ======================== GLOBAL ========================
+
+extern UserManager um;
+extern User* aktif;
+
 // ======================== HELPER ========================
 
-void header(string judul) {
-    system("cls"); // Windows
-    cout << "====================================\n";
-    cout << judul << endl;
-    cout << "====================================\n";
-}
-
-void jeda() {
-    cout << "\nTekan ENTER untuk lanjut...";
-    cin.ignore();
-    cin.get();
-}
-
-void inputInt(string pesan, int &var) {
-    while (true) {
+void inputInt(string pesan, int& var)
+{
+    while (true)
+    {
         cout << pesan;
+
         cin >> var;
 
-        if (cin.fail()) {
+        if (cin.fail())
+        {
             cin.clear();
-            cin.ignore(1000, '\n');
+
+            cin.ignore(
+                numeric_limits<streamsize>::max(),
+                '\n'
+            );
+
             cout << "[!] Input harus angka.\n";
-        } else {
-            cin.ignore(1000, '\n');
+        }
+        else
+        {
+            cin.ignore(
+                numeric_limits<streamsize>::max(),
+                '\n'
+            );
+
             break;
         }
     }
 }
 
-// ======================== GLOBAL ========================
+void inputDouble(string pesan,
+                 double& var)
+{
+    while (true)
+    {
+        cout << pesan;
 
-extern UserManager um;
-extern User *aktif;
+        cin >> var;
 
-// ======================== DASHBOARD & MENU UTAMA ========================
+        if (cin.fail())
+        {
+            cin.clear();
 
-void tampilkanMenu() {
-    cout << "==================================\n";
-    cout << "      SISTEM INVENTORY BARANG      \n";
-    cout << "==================================\n";
+            cin.ignore(
+                numeric_limits<streamsize>::max(),
+                '\n'
+            );
+
+            cout << "[!] Input harus angka.\n";
+        }
+        else
+        {
+            cin.ignore(
+                numeric_limits<streamsize>::max(),
+                '\n'
+            );
+
+            break;
+        }
+    }
+}
+
+void header(string judul)
+{
+    cout << "\n====================================\n";
+
+    cout << judul << endl;
+
+    cout << "====================================\n";
+}
+
+void jeda()
+{
+    cout << "\nTekan ENTER untuk lanjut...";
+
+    cin.get();
+}
+
+// ======================== MENU UTAMA ========================
+
+void tampilkanMenu()
+{
+    header(" SISTEM INVENTORY BARANG ");
+
     cout << "1. Login\n";
     cout << "2. Lihat Barang\n";
     cout << "3. Low Stock\n";
     cout << "4. Laporan Stok\n";
     cout << "5. History\n";
     cout << "6. Keluar\n";
-    cout << "==================================\n";
-    cout << "Pilih menu: ";
+
+    cout << "====================================\n";
 }
 
-void tampilkanDashboard(int totalBarang, int lowStock) {
-    cout << "==============================\n";
-    cout << "         DASHBOARD            \n";
-    cout << "==============================\n";
+// ======================== DASHBOARD ========================
 
-    cout << "Total Barang : " << totalBarang << endl;
-    cout << "Stok Menipis : " << lowStock << endl;
+void tampilkanDashboard(int totalBarang,
+                        int lowStock)
+{
+    header(" DASHBOARD ");
 
-    cout << "==============================\n";
+    cout << "Total Barang : "
+         << totalBarang
+         << endl;
+
+    cout << "Low Stock    : "
+         << lowStock
+         << endl;
+
+    cout << "====================================\n";
 
     if (lowStock > 0)
-        cout << "⚠ WARNING: Ada barang dengan stok rendah!\n";
+    {
+        cout << "[WARNING] Ada stok menipis!\n";
+    }
     else
-        cout << "✔ Semua stok aman\n";
-
-    cout << "==============================\n";
+    {
+        cout << "Semua stok aman.\n";
+    }
 }
 
-// ======================== INVENTORY VIEW ========================
+// ======================== INVENTORY ========================
 
-void tampilkanListBarang() {
-    ifstream file("../data/barang.txt");
+void tampilkanListBarang()
+{
+    header(" LIST BARANG ");
 
-    if (!file.is_open()) {
-        cout << "Gagal membuka file barang!\n";
-        return;
-    }
-
-    string id, nama;
-    int stok;
-
-    cout << "==========================================\n";
-    cout << "              LIST BARANG                 \n";
-    cout << "==========================================\n";
-
-    cout << left << setw(10) << "ID"
-         << setw(20) << "Nama"
-         << setw(10) << "Stok" << endl;
-
-    cout << "------------------------------------------\n";
-
-    while (file >> id >> nama >> stok) {
-        cout << left << setw(10) << id
-             << setw(20) << nama
-             << setw(10) << stok << endl;
-    }
-
-    cout << "==========================================\n";
-    file.close();
-}
-
-void tampilkanLowStock() {
-    ifstream file("../data/barang.txt");
-
-    if (!file.is_open()) {
-        cout << "Gagal membuka file barang!\n";
-        return;
-    }
-
-    string id, nama;
-    int stok;
-    bool ada = false;
-
-    cout << "========== LOW STOCK WARNING ==========\n";
-
-    while (file >> id >> nama >> stok) {
-        if (stok <= 10) {
-            cout << "⚠ " << nama << " (Stok: " << stok << ")\n";
-            ada = true;
-        }
-    }
-
-    if (!ada)
-        cout << "Semua stok aman ✔\n";
-
-    cout << "=======================================\n";
-    file.close();
-}
-
-void tampilkanLaporanStok() {
-    ifstream file("../data/barang.txt");
-
-    if (!file.is_open()) {
-        cout << "Gagal membuka file!\n";
-        return;
-    }
-
-    string id, nama;
-    int stok;
-
-    cout << "=========== LAPORAN STOK ===========\n";
-
-    while (file >> id >> nama >> stok) {
-        cout << "ID: " << id
-             << " | Nama: " << nama
-             << " | Stok: " << stok << endl;
-    }
-
-    cout << "====================================\n";
-    file.close();
-}
-
-void tampilkanHistory() {
-    cout << "========= HISTORY TRANSAKSI =========\n";
-    cout << "[Masuk] Pensil +10\n";
-    cout << "[Keluar] Buku -5\n";
-    cout << "[Masuk] Penghapus +20\n";
-    cout << "====================================\n";
-}
-
-// ======================== USER MANAGEMENT (ADMIN) ========================
-
-void daftarUser() {
-    header(" DAFTAR USER ");
-
-    cout << left << setw(5) << "No"
-         << setw(20) << "Username"
-         << "Role\n";
-
-    for (int i = 0; i < 35; i++) cout << "-";
-    cout << "\n";
-
-    for (int i = 0; i < um.jml; i++) {
-        cout << left << setw(5) << (i + 1)
-             << setw(20) << um.data[i].username
-             << roleStr(um.data[i].role) << "\n";
-    }
-
-    for (int i = 0; i < 35; i++) cout << "-";
-    cout << "\nTotal: " << um.jml << " user\n";
+    lihatStok();
 
     jeda();
 }
 
-void registrasi() {
-    header(" REGISTRASI USER BARU ");
+void tampilkanLowStock()
+{
+    header(" LOW STOCK ");
 
-    if (um.jml >= UserManager::MAX) {
-        cout << "[!] User sudah penuh.\n";
+    cout << "[Belum diimplementasi]\n";
+
+    jeda();
+}
+
+void tampilkanLaporanStok()
+{
+    header(" LAPORAN STOK ");
+
+    cout << "[Belum diimplementasi]\n";
+
+    jeda();
+}
+
+void tampilkanHistory()
+{
+    header(" HISTORY TRANSAKSI ");
+
+    riwayatTransaksi();
+
+    jeda();
+}
+
+// ======================== USER ========================
+
+void daftarUser()
+{
+    header(" DAFTAR USER ");
+
+    cout << left
+         << setw(5)  << "No"
+         << setw(20) << "Username"
+         << "Role\n";
+
+    cout << "------------------------------------\n";
+
+    for (int i = 0; i < um.jml; i++)
+    {
+        cout << left
+             << setw(5)  << (i + 1)
+             << setw(20) << um.data[i].username
+             << roleStr(um.data[i].role)
+             << endl;
+    }
+
+    cout << "------------------------------------\n";
+
+    cout << "Total User: "
+         << um.jml
+         << endl;
+
+    jeda();
+}
+
+void registrasi()
+{
+    header(" REGISTRASI USER ");
+
+    if (um.jml >= UserManager::MAX)
+    {
+        cout << "[!] User penuh.\n";
+
         jeda();
+
         return;
     }
 
-    string username, password;
+    string username;
+    string password;
 
     cout << "Username : ";
-    cin >> username;
-    cout << "Password : ";
-    cin >> password;
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    getline(cin, username);
 
-    if (username.empty() || !semuaAlphanumeric(username)) {
-        cout << "[!] Username tidak valid.\n";
+    cout << "Password : ";
+    getline(cin, password);
+
+    if (username.empty())
+    {
+        cout << "[!] Username kosong.\n";
+
         jeda();
+
         return;
     }
 
-    if (password.empty() || !semuaAngka(password)) {
-        cout << "[!] Password harus angka.\n";
+    if (password.empty())
+    {
+        cout << "[!] Password kosong.\n";
+
         jeda();
+
+        return;
+    }
+
+    if (!semuaAlphanumeric(username))
+    {
+        cout << "[!] Username harus alphanumeric.\n";
+
+        jeda();
+
+        return;
+    }
+
+    if (!semuaAngka(password))
+    {
+        cout << "[!] Password harus angka.\n";
+
+        jeda();
+
         return;
     }
 
     int pilRole;
-    cout << "Role (1=Admin, 2=Staff): ";
-    inputInt("", pilRole);
 
-    if (pilRole != 1 && pilRole != 2) {
+    cout << "\n1. Admin\n";
+    cout << "2. Staff\n";
+
+    inputInt("Pilih role: ", pilRole);
+
+    if (pilRole != 1 &&
+        pilRole != 2)
+    {
         cout << "[!] Role tidak valid.\n";
+
         jeda();
+
         return;
     }
 
-    Role r = (pilRole == 1) ? ADMIN : STAFF;
+    Role roleBaru =
+        (pilRole == 1)
+        ? ADMIN
+        : STAFF;
 
-    if (!um.tambahUser(username, password, r)) {
+    bool berhasil =
+        um.tambahUser(
+            username,
+            password,
+            roleBaru
+        );
+
+    if (!berhasil)
+    {
         cout << "[!] Username sudah dipakai.\n";
+
         jeda();
+
         return;
     }
 
-    cout << "Registrasi berhasil!\n";
+    cout << "Registrasi berhasil.\n";
+
     jeda();
 }
 
-void hapusUser() {
+void hapusUser()
+{
     header(" HAPUS USER ");
 
-    string target;
-    cout << "Masukkan username: ";
-    cin >> target;
+    if (aktif == nullptr)
+    {
+        cout << "[!] Tidak ada user aktif.\n";
 
-    if (!um.hapusUser(target, aktif->username)) {
+        jeda();
+
+        return;
+    }
+
+    string username;
+
+    cout << "Masukkan username: ";
+
+    getline(cin, username);
+
+    bool berhasil =
+        um.hapusUser(
+            username,
+            aktif->username
+        );
+
+    if (!berhasil)
+    {
         cout << "[!] Gagal hapus user.\n";
-    } else {
+    }
+    else
+    {
         cout << "User berhasil dihapus.\n";
     }
 
     jeda();
 }
 
-// ======================== MENU ROLE ========================
+// ======================== MENU ADMIN ========================
 
-void menuAdmin() {
+void menuAdmin()
+{
+    if (aktif == nullptr)
+    {
+        cout << "[!] User tidak ditemukan.\n";
+
+        return;
+    }
+
     int pil;
-    do {
+
+    do
+    {
         header(" MENU ADMIN ");
-        cout << "Login sebagai: " << aktif->username << " [admin]\n\n";
+
+        cout << "Login sebagai: "
+             << aktif->username
+             << " [ADMIN]\n\n";
+
         cout << "1. Registrasi User\n";
         cout << "2. Daftar User\n";
         cout << "3. Hapus User\n";
         cout << "4. Kelola Stok\n";
         cout << "0. Logout\n";
 
-        inputInt("Pilihan: ", pil);
+        inputInt("\nPilihan: ", pil);
 
-        switch (pil) {
-        case 1: registrasi(); break;
-        case 2: daftarUser(); break;
-        case 3: hapusUser(); break;
-        case 4: menuKelola(); break;
+        switch (pil)
+        {
+            case 1:
+                registrasi();
+                break;
+
+            case 2:
+                daftarUser();
+                break;
+
+            case 3:
+                hapusUser();
+                break;
+
+            case 4:
+                menuKelola();
+                break;
+
+            case 0:
+                cout << "\nLogout berhasil.\n";
+                break;
+
+            default:
+                cout << "[!] Pilihan tidak valid.\n";
+
+                jeda();
         }
-    } while (pil != 0);
+
+    }
+    while (pil != 0);
 }
 
-void menuStaff() {
+// ======================== MENU STAFF ========================
+
+void menuStaff()
+{
+    if (aktif == nullptr)
+    {
+        cout << "[!] User tidak ditemukan.\n";
+
+        return;
+    }
+
     int pil;
-    do {
+
+    do
+    {
         header(" MENU STAFF ");
-        cout << "Login sebagai: " << aktif->username << " [staff]\n\n";
+
+        cout << "Login sebagai: "
+             << aktif->username
+             << " [STAFF]\n\n";
+
         cout << "1. Kelola Stok\n";
         cout << "0. Logout\n";
 
-        inputInt("Pilihan: ", pil);
+        inputInt("\nPilihan: ", pil);
 
-        if (pil == 1)
-            menuKelola();
+        switch (pil)
+        {
+            case 1:
+                menuKelola();
+                break;
 
-    } while (pil != 0);
+            case 0:
+                cout << "\nLogout berhasil.\n";
+                break;
 
-void inputDouble(string pesan, double &var) {
-    while (true) {
-        cout << pesan;
-        cin >> var;
+            default:
+                cout << "[!] Pilihan tidak valid.\n";
 
-        if (cin.fail()) {
-            cin.clear();
-            cin.ignore(1000, '\n');
-            cout << "[!] Input harus angka (boleh desimal).\n";
-        } else {
-            cin.ignore(1000, '\n');
-            break;
+                jeda();
         }
+
     }
-}
+    while (pil != 0);
 }

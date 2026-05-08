@@ -4,53 +4,92 @@
 #include "barang.h"
 #include <string>
 #include <vector>
-using namespace std;
 
-// ======================== NODE ========================
-
-struct BSTNode {
+struct BSTNode
+{
     Barang data;
     BSTNode* left;
     BSTNode* right;
 
-    BSTNode(Barang b) : data(b), left(nullptr), right(nullptr) {}
+    BSTNode(const Barang& b);
 };
 
-// ======================== CLASS BST ========================
+class BST
+{
+public:
 
-class BST {
-private:
+    // ========================
+    // PUBLIC MEMBER
+    // ========================
+
     BSTNode* root;
 
-    // Helper (internal)
-    BSTNode* insertHelper(BSTNode* node, Barang barang);
-    BSTNode* deleteHelper(BSTNode* node, string nama);
+    int size;
+
+private:
+
+    BSTNode* insertHelper(BSTNode* node,
+                          const Barang& barang);
+
+    BSTNode* deleteHelper(BSTNode* node,
+                          const std::string& nama);
+
     BSTNode* findMin(BSTNode* node);
-    void inorderHelper(BSTNode* node, vector<Barang>& result);
-    void clearHelper(BSTNode* node);
-    BSTNode* searchByNameHelper(BSTNode* node, string nama);
-    void searchByKeywordHelper(BSTNode* node, string keyword, vector<Barang>& result);
+
+
+    void inorderHelper(
+    BSTNode* node,
+    std::vector<Barang>& result);
+
+    BSTNode* searchByNameHelper(
+        BSTNode* node,
+        const std::string& nama
+    );
+
+    void searchByKeywordHelper(
+        BSTNode* node,
+        const std::string& keyword,
+        std::vector<Barang>& result
+    );
 
 public:
+
     BST();
+
     ~BST();
 
-    // CRUD
-    void insert(Barang barang);
-    void remove(string nama);
-    void update(string nama, Barang barangBaru);
+    void insert(const Barang& barang);
 
-    // Search
-    Barang* searchByName(string nama);
+    void remove(const std::string& nama);
+
+    void update(
+        const std::string& nama,
+        const Barang& barangBaru
+    );
+
+    Barang* searchByName(
+        const std::string& nama
+    );
+
     Barang* searchById(int id);
-    vector<Barang> searchByKeyword(string keyword);
 
-    // Traversal
-    vector<Barang> inorder();
+    std::vector<Barang>
+    searchByKeyword(
+        const std::string& keyword
+    );
 
-    // Utility
     bool isEmpty();
+
     void clear();
+
+    void inorder(BSTNode* node,
+             Barang arr[],
+             int& idx);
+
+    std::vector<Barang> inorder();
+
+
+    void clearHelper(BSTNode* node);
 };
 
 #endif
