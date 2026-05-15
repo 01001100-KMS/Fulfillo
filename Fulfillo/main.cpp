@@ -33,6 +33,7 @@ int main()
     // ================== 2. MENU LOGIN ==================
     do
     {
+        cls();
         header(" SISTEM MANAJEMEN GUDANG ");
         cout << "1. Login\n";
         cout << "0. Keluar\n";
@@ -47,6 +48,7 @@ int main()
 
         case 0:
             cout << "Keluar dari aplikasi...\n";
+            return 0; // Keluar dari program langsung
             break;
 
         default:
@@ -55,57 +57,6 @@ int main()
         }
 
     } while (pilihan != 0);
-
-    // ================== 3. MENU UTAMA (SETELAH LOGIN) ==================
-    // (Simulasi menu sistem Fulfillo)
-
-    int menu;
-    do
-    {
-        system("cls");
-
-        int totalBarang = 100;
-        int lowStock = 5;
-
-        tampilkanDashboard(totalBarang, lowStock);
-        tampilkanMenu();
-
-        cin >> menu;
-        cout << endl;
-
-        switch (menu)
-        {
-        case 1:
-            cout << ">> Login\n";
-            break;
-
-        case 2:
-            tampilkanListBarang();
-            break;
-
-        case 3:
-            tampilkanLowStock();
-            break;
-
-        case 4:
-            tampilkanLaporanStok();
-            break;
-
-        case 5:
-            tampilkanHistory();
-            break;
-
-        case 6:
-            cout << ">> Keluar...\n";
-            break;
-
-        default:
-            cout << ">> Pilihan tidak valid!\n";
-        }
-
-        cout << endl;
-
-    } while (menu != 6);
 
     // ================== 4. PENUTUP ==================
     cout << "Program selesai.\n";

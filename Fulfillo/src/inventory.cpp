@@ -34,6 +34,7 @@ int getLastId()
 
 void lihatStok()
 {
+    cls();
     header(" STOK BARANG ");
 
     vector<Barang> data = bst.inorder();
@@ -53,7 +54,8 @@ void lihatStok()
          << setw(12) << "Harga"
          << "Min\n";
 
-    for (int i = 0; i < 68; i++) cout << "-";
+    for (int i = 0; i < 68; i++)
+        cout << "-";
     cout << "\n";
 
     for (auto &b : data)
@@ -71,7 +73,8 @@ void lihatStok()
              << b.minStok << "\n";
     }
 
-    for (int i = 0; i < 68; i++) cout << "-";
+    for (int i = 0; i < 68; i++)
+        cout << "-";
     cout << "\nTotal: " << data.size() << " jenis barang\n";
 
     jeda();
@@ -81,6 +84,7 @@ void lihatStok()
 
 void barangMasuk()
 {
+    cls();
     header(" BARANG MASUK ");
 
     int id;
@@ -123,8 +127,7 @@ void barangMasuk()
 
         if (jmlTransaksi < MAX_TRANSAKSI)
             transaksis[jmlTransaksi++] = {
-                b.id, b.nama, "masuk", b.stok, aktif->username
-            };
+                b.id, b.nama, "masuk", b.stok, aktif->username};
 
         cout << "\nBarang baru '" << b.nama << "' berhasil ditambahkan.\n";
     }
@@ -156,8 +159,7 @@ void barangMasuk()
 
         if (jmlTransaksi < MAX_TRANSAKSI)
             transaksis[jmlTransaksi++] = {
-                id, node->nama, "masuk", jumlah, aktif->username
-            };
+                id, node->nama, "masuk", jumlah, aktif->username};
 
         cout << "\nBarang masuk berhasil. Stok sekarang: " << node->stok << "\n";
     }
@@ -169,6 +171,7 @@ void barangMasuk()
 
 void barangKeluar()
 {
+    cls();
     header(" BARANG KELUAR ");
 
     vector<Barang> data = bst.inorder();
@@ -215,8 +218,7 @@ void barangKeluar()
 
     if (jmlTransaksi < MAX_TRANSAKSI)
         transaksis[jmlTransaksi++] = {
-            id, node->nama, "keluar", jumlah, aktif->username
-        };
+            id, node->nama, "keluar", jumlah, aktif->username};
 
     cout << "\nBarang keluar berhasil. Stok sekarang: " << node->stok << "\n";
 
@@ -230,6 +232,7 @@ void barangKeluar()
 
 void riwayatTransaksi()
 {
+    cls();
     header(" RIWAYAT TRANSAKSI ");
 
     if (jmlTransaksi == 0)
@@ -247,7 +250,8 @@ void riwayatTransaksi()
          << setw(9) << "Jumlah"
          << "Oleh\n";
 
-    for (int i = 0; i < 62; i++) cout << "-";
+    for (int i = 0; i < 62; i++)
+        cout << "-";
     cout << "\n";
 
     for (int i = 0; i < jmlTransaksi; i++)
@@ -261,7 +265,8 @@ void riwayatTransaksi()
              << transaksis[i].oleh << "\n";
     }
 
-    for (int i = 0; i < 62; i++) cout << "-";
+    for (int i = 0; i < 62; i++)
+        cout << "-";
     cout << "\nTotal transaksi: " << jmlTransaksi << "\n";
 
     jeda();
@@ -275,6 +280,7 @@ void menuKelola()
 
     do
     {
+        cls();
         header(" KELOLA STOK ");
         cout << "1. Barang Masuk\n";
         cout << "2. Barang Keluar\n";
@@ -286,11 +292,20 @@ void menuKelola()
 
         switch (pil)
         {
-        case 1: barangMasuk(); break;
-        case 2: barangKeluar(); break;
-        case 3: lihatStok(); break;
-        case 4: riwayatTransaksi(); break;
-        case 0: break;
+        case 1:
+            barangMasuk();
+            break;
+        case 2:
+            barangKeluar();
+            break;
+        case 3:
+            lihatStok();
+            break;
+        case 4:
+            riwayatTransaksi();
+            break;
+        case 0:
+            break;
         default:
             cout << "[!] Pilihan tidak valid.\n";
             jeda();

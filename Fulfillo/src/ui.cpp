@@ -16,11 +16,11 @@ using namespace std;
 // ======================== GLOBAL ========================
 
 extern UserManager um;
-extern User* aktif;
+extern User *aktif;
 
 // ======================== HELPER ========================
 
-void inputInt(string pesan, int& var)
+void inputInt(string pesan, int &var)
 {
     while (true)
     {
@@ -34,8 +34,7 @@ void inputInt(string pesan, int& var)
 
             cin.ignore(
                 numeric_limits<streamsize>::max(),
-                '\n'
-            );
+                '\n');
 
             cout << "[!] Input harus angka.\n";
         }
@@ -43,8 +42,7 @@ void inputInt(string pesan, int& var)
         {
             cin.ignore(
                 numeric_limits<streamsize>::max(),
-                '\n'
-            );
+                '\n');
 
             break;
         }
@@ -52,7 +50,7 @@ void inputInt(string pesan, int& var)
 }
 
 void inputDouble(string pesan,
-                 double& var)
+                 double &var)
 {
     while (true)
     {
@@ -66,8 +64,7 @@ void inputDouble(string pesan,
 
             cin.ignore(
                 numeric_limits<streamsize>::max(),
-                '\n'
-            );
+                '\n');
 
             cout << "[!] Input harus angka.\n";
         }
@@ -75,8 +72,7 @@ void inputDouble(string pesan,
         {
             cin.ignore(
                 numeric_limits<streamsize>::max(),
-                '\n'
-            );
+                '\n');
 
             break;
         }
@@ -99,21 +95,12 @@ void jeda()
     cin.get();
 }
 
-// ======================== MENU UTAMA ========================
-
-void tampilkanMenu()
+void cls()
 {
-    header(" SISTEM INVENTORY BARANG ");
-
-    cout << "1. Login\n";
-    cout << "2. Lihat Barang\n";
-    cout << "3. Low Stock\n";
-    cout << "4. Laporan Stok\n";
-    cout << "5. History\n";
-    cout << "6. Keluar\n";
-
-    cout << "====================================\n";
+    system("cls");
 }
+
+// ======================== MENU UTAMA ========================
 
 // ======================== DASHBOARD ========================
 
@@ -146,6 +133,7 @@ void tampilkanDashboard(int totalBarang,
 
 void tampilkanListBarang()
 {
+    cls();
     header(" LIST BARANG ");
 
     lihatStok();
@@ -173,6 +161,7 @@ void tampilkanLaporanStok()
 
 void tampilkanHistory()
 {
+    cls();
     header(" HISTORY TRANSAKSI ");
 
     riwayatTransaksi();
@@ -184,10 +173,11 @@ void tampilkanHistory()
 
 void daftarUser()
 {
+    cls();
     header(" DAFTAR USER ");
 
     cout << left
-         << setw(5)  << "No"
+         << setw(5) << "No"
          << setw(20) << "Username"
          << "Role\n";
 
@@ -196,7 +186,7 @@ void daftarUser()
     for (int i = 0; i < um.jml; i++)
     {
         cout << left
-             << setw(5)  << (i + 1)
+             << setw(5) << (i + 1)
              << setw(20) << um.data[i].username
              << roleStr(um.data[i].role)
              << endl;
@@ -213,6 +203,7 @@ void daftarUser()
 
 void registrasi()
 {
+    cls();
     header(" REGISTRASI USER ");
 
     if (um.jml >= UserManager::MAX)
@@ -288,15 +279,14 @@ void registrasi()
 
     Role roleBaru =
         (pilRole == 1)
-        ? ADMIN
-        : STAFF;
+            ? ADMIN
+            : STAFF;
 
     bool berhasil =
         um.tambahUser(
             username,
             password,
-            roleBaru
-        );
+            roleBaru);
 
     if (!berhasil)
     {
@@ -314,6 +304,7 @@ void registrasi()
 
 void hapusUser()
 {
+    cls();
     header(" HAPUS USER ");
 
     if (aktif == nullptr)
@@ -334,8 +325,7 @@ void hapusUser()
     bool berhasil =
         um.hapusUser(
             username,
-            aktif->username
-        );
+            aktif->username);
 
     if (!berhasil)
     {
@@ -364,6 +354,7 @@ void menuAdmin()
 
     do
     {
+        cls();
         header(" MENU ADMIN ");
 
         cout << "Login sebagai: "
@@ -380,34 +371,33 @@ void menuAdmin()
 
         switch (pil)
         {
-            case 1:
-                registrasi();
-                break;
+        case 1:
+            registrasi();
+            break;
 
-            case 2:
-                daftarUser();
-                break;
+        case 2:
+            daftarUser();
+            break;
 
-            case 3:
-                hapusUser();
-                break;
+        case 3:
+            hapusUser();
+            break;
 
-            case 4:
-                menuKelola();
-                break;
+        case 4:
+            menuKelola();
+            break;
 
-            case 0:
-                cout << "\nLogout berhasil.\n";
-                break;
+        case 0:
+            cout << "\nLogout berhasil.\n";
+            break;
 
-            default:
-                cout << "[!] Pilihan tidak valid.\n";
+        default:
+            cout << "[!] Pilihan tidak valid.\n";
 
-                jeda();
+            jeda();
         }
 
-    }
-    while (pil != 0);
+    } while (pil != 0);
 }
 
 // ======================== MENU STAFF ========================
@@ -425,6 +415,7 @@ void menuStaff()
 
     do
     {
+        cls();
         header(" MENU STAFF ");
 
         cout << "Login sebagai: "
@@ -438,20 +429,19 @@ void menuStaff()
 
         switch (pil)
         {
-            case 1:
-                menuKelola();
-                break;
+        case 1:
+            menuKelola();
+            break;
 
-            case 0:
-                cout << "\nLogout berhasil.\n";
-                break;
+        case 0:
+            cout << "\nLogout berhasil.\n";
+            break;
 
-            default:
-                cout << "[!] Pilihan tidak valid.\n";
+        default:
+            cout << "[!] Pilihan tidak valid.\n";
 
-                jeda();
+            jeda();
         }
 
-    }
-    while (pil != 0);
+    } while (pil != 0);
 }

@@ -71,6 +71,7 @@ bool semuaAlphanumeric(const string &s)
 // Proses login user, verifikasi, dan arahkan ke menu yang sesuai
 void login()
 {
+    cls();
     header(" LOGIN ");
 
     string uname, pass;
@@ -99,6 +100,7 @@ void login()
     cout << "\n>>> Login berhasil! " << aktif->username
          << " [" << roleStr(aktif->role) << "] <<<\n";
     jeda();
+    cls();
 
     if (aktif->role == ADMIN)
         menuAdmin();
