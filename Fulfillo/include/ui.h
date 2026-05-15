@@ -5,18 +5,18 @@
 #include <string>
 // ======================== HELPER ========================
 
-void inputInt(std::string pesan, int& var);
+void inputInt(std::string pesan, int &var);
 
 void inputDouble(std::string pesan,
-                 double& var);
+                 double &var);
 
 void header(std::string judul);
 
 void jeda();
 
-// ======================== MENU UTAMA ========================
+void cls();
 
-void tampilkanMenu();
+// ======================== MENU UTAMA ========================
 
 void tampilkanDashboard(int totalBarang,
                         int lowStock);
