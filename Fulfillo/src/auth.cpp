@@ -3,81 +3,55 @@
 #include "../include/ui.h"
 #include "../include/user.h"
 #include <iostream>
-#include <iomanip>
 #include <limits>
 using namespace std;
 
 // Global variables — didefinisikan di main.cpp
 extern UserManager um;
-extern BST bst;
-extern User *aktif;
+extern BST         bst;
+extern User       *aktif;
 
 // ======================== UTILITAS ========================
 
-// Ubah nilai role menjadi teks untuk tampilan
-string roleStr(Role r) { return r == ADMIN ? "admin" : "staff"; }
-
-// Baca input bilangan bulat dengan validasi
-void inputInt(const string &prompt, int &hasil)
+string roleStr(Role r)
 {
-    while (true)
-    {
-        cout << prompt;
-        if (!(cin >> hasil))
-        {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << "[!] Input harus berupa bilangan bulat. Coba lagi.\n";
-        }
-        else
-        {
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            return;
-        }
-    }
+    return r == ADMIN ? "admin" : "staff";
 }
 
-// Cetak garis pemisah menu
-void garis()
-{
-    for (int i = 0; i < 60; i++)
-        cout << "=";
-    cout << "\n";
-}
-// Periksa apakah semua karakter string adalah angka
+// FIX: inputInt DIHAPUS dari sini — sudah didefinisikan di ui.cpp
+// FIX: garis() DIHAPUS — tidak dipakai di mana pun
+
 bool semuaAngka(const string &s)
 {
-    if (s.empty())
-        return false;
+    if (s.empty()) return false;
     for (char c : s)
-        if (!isdigit(c))
-            return false;
+        if (!isdigit(c)) return false;
     return true;
 }
 
-// Periksa apakah string hanya berisi huruf dan angka
 bool semuaAlphanumeric(const string &s)
 {
-    if (s.empty())
-        return false;
+    if (s.empty()) return false;
     for (char c : s)
-        if (!isalnum(c))
-            return false;
+        if (!isalnum(c)) return false;
     return true;
 }
 
 // ======================== AUTH ========================
 
-// Proses login user, verifikasi, dan arahkan ke menu yang sesuai
 void login()
 {
+    cls();
     header(" LOGIN ");
 
     string uname, pass;
+
     cout << "Username : ";
     cin >> uname;
+
     cout << "Password : ";
     cin >> pass;
+
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
     if (uname.empty() || pass.empty())
@@ -88,6 +62,7 @@ void login()
     }
 
     User *u = um.cari(uname, pass);
+
     if (!u)
     {
         cout << "\n[!] Username atau password salah.\n";
@@ -96,9 +71,12 @@ void login()
     }
 
     aktif = u;
+
     cout << "\n>>> Login berhasil! " << aktif->username
          << " [" << roleStr(aktif->role) << "] <<<\n";
+
     jeda();
+    cls();
 
     if (aktif->role == ADMIN)
         menuAdmin();

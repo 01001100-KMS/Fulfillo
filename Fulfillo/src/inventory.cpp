@@ -3,6 +3,8 @@
 #include "../include/bst.h"
 #include "../include/user.h"
 #include "../include/ui.h"
+#include "../include/queue.h"
+#include "../include/stack.h"
 #include <iostream>
 #include <iomanip>
 #include <limits>
@@ -10,46 +12,36 @@ using namespace std;
 
 // ======================== GLOBAL ========================
 
-extern Transaksi transaksis[];
-extern int jmlTransaksi;
-extern BST bst;
-extern User *aktif;
+// FIX: pakai Queue untuk transaksi dan Stack untuk undo
+// (array Transaksi[] + jmlTransaksi sudah dihapus dari main.cpp)
+extern Queue  transaksiQueue;
+extern Stack  undoStack;
+extern BST    bst;
+extern User  *aktif;
 
 // ======================== HELPER ========================
 
-// Ambil ID terbesar (biar auto increment)
 int getLastId()
 {
     vector<Barang> data = bst.inorder();
     int maxId = 0;
-
     for (auto &b : data)
         if (b.id > maxId)
             maxId = b.id;
-
     return maxId;
 }
 
-// ======================== FITUR STOK ========================
-
-void lihatStok()
+// Tampilkan tabel stok tanpa cls/header/jeda (reusable)
+void tampilTabelStok()
 {
-    header(" STOK BARANG ");
-
     vector<Barang> data = bst.inorder();
-
-    if (data.empty())
-    {
-        cout << "Belum ada data barang.\n";
-        jeda();
-        return;
-    }
+    if (data.empty()) return;
 
     cout << left
-         << setw(5) << "ID"
+         << setw(5)  << "ID"
          << setw(22) << "Nama Barang"
          << setw(15) << "Kategori"
-         << setw(7) << "Stok"
+         << setw(7)  << "Stok"
          << setw(12) << "Harga"
          << "Min\n";
 
@@ -59,20 +51,37 @@ void lihatStok()
     for (auto &b : data)
     {
         string stokInfo = to_string(b.stok);
-        if (b.isLowStock())
-            stokInfo += " (!)";
+        if (b.isLowStock()) stokInfo += " (!)";
 
         cout << left
-             << setw(5) << b.id
+             << setw(5)  << b.id
              << setw(22) << b.nama
              << setw(15) << b.kategori
-             << setw(7) << stokInfo
+             << setw(7)  << stokInfo
              << setw(12) << b.harga
              << b.minStok << "\n";
     }
 
     for (int i = 0; i < 68; i++) cout << "-";
-    cout << "\nTotal: " << data.size() << " jenis barang\n";
+    cout << "\n";
+}
+
+// ======================== LIHAT STOK ========================
+
+void lihatStok()
+{
+    cls();
+    header(" STOK BARANG ");
+
+    if (bst.size == 0)
+    {
+        cout << "Belum ada data barang.\n";
+        jeda();
+        return;
+    }
+
+    tampilTabelStok();
+    cout << "Total: " << bst.size << " jenis barang\n";
 
     jeda();
 }
@@ -81,7 +90,10 @@ void lihatStok()
 
 void barangMasuk()
 {
+    cls();
     header(" BARANG MASUK ");
+    tampilTabelStok();
+    cout << "\n";
 
     int id;
     inputInt("ID Barang (0 = tambah baru): ", id);
@@ -121,10 +133,11 @@ void barangMasuk()
 
         bst.insert(b);
 
-        if (jmlTransaksi < MAX_TRANSAKSI)
-            transaksis[jmlTransaksi++] = {
-                b.id, b.nama, "masuk", b.stok, aktif->username
-            };
+        // FIX: enqueue ke Queue (bukan push ke array)
+        transaksiQueue.enqueue({b.id, b.nama, "masuk", b.stok, aktif->username});
+
+        // FIX: push ke Stack untuk undo
+        undoStack.push(buatAksi(TAMBAH_BARANG, Barang(), b, "Tambah " + b.nama));
 
         cout << "\nBarang baru '" << b.nama << "' berhasil ditambahkan.\n";
     }
@@ -152,12 +165,11 @@ void barangMasuk()
             return;
         }
 
+        Barang sebelum = *node; // simpan state sebelum diubah
         node->stok += jumlah;
 
-        if (jmlTransaksi < MAX_TRANSAKSI)
-            transaksis[jmlTransaksi++] = {
-                id, node->nama, "masuk", jumlah, aktif->username
-            };
+        transaksiQueue.enqueue({id, node->nama, "masuk", jumlah, aktif->username});
+        undoStack.push(buatAksi(TAMBAH_STOK, sebelum, *node, "Tambah stok " + node->nama));
 
         cout << "\nBarang masuk berhasil. Stok sekarang: " << node->stok << "\n";
     }
@@ -169,16 +181,20 @@ void barangMasuk()
 
 void barangKeluar()
 {
+    cls();
     header(" BARANG KELUAR ");
 
-    vector<Barang> data = bst.inorder();
-
-    if (data.empty())
+    // FIX: cek empty pakai bst.size SEBELUM tampilTabelStok
+    // (sebelumnya inorder() dipanggil dua kali)
+    if (bst.size == 0)
     {
         cout << "[!] Belum ada data barang.\n";
         jeda();
         return;
     }
+
+    tampilTabelStok();
+    cout << "\n";
 
     int id, jumlah;
     inputInt("ID Barang    : ", id);
@@ -211,12 +227,11 @@ void barangKeluar()
         return;
     }
 
+    Barang sebelum = *node; // simpan state sebelum diubah
     node->stok -= jumlah;
 
-    if (jmlTransaksi < MAX_TRANSAKSI)
-        transaksis[jmlTransaksi++] = {
-            id, node->nama, "keluar", jumlah, aktif->username
-        };
+    transaksiQueue.enqueue({id, node->nama, "keluar", jumlah, aktif->username});
+    undoStack.push(buatAksi(KURANG_STOK, sebelum, *node, "Kurang stok " + node->nama));
 
     cout << "\nBarang keluar berhasil. Stok sekarang: " << node->stok << "\n";
 
@@ -228,42 +243,12 @@ void barangKeluar()
 
 // ======================== RIWAYAT ========================
 
+// FIX: pakai Queue::displayHistory() — tidak perlu loop manual lagi
 void riwayatTransaksi()
 {
+    cls();
     header(" RIWAYAT TRANSAKSI ");
-
-    if (jmlTransaksi == 0)
-    {
-        cout << "Belum ada transaksi.\n";
-        jeda();
-        return;
-    }
-
-    cout << left
-         << setw(5) << "No"
-         << setw(6) << "ID"
-         << setw(22) << "Nama Barang"
-         << setw(9) << "Jenis"
-         << setw(9) << "Jumlah"
-         << "Oleh\n";
-
-    for (int i = 0; i < 62; i++) cout << "-";
-    cout << "\n";
-
-    for (int i = 0; i < jmlTransaksi; i++)
-    {
-        cout << left
-             << setw(5) << (i + 1)
-             << setw(6) << transaksis[i].idBarang
-             << setw(22) << transaksis[i].namaBarang
-             << setw(9) << transaksis[i].jenis
-             << setw(9) << transaksis[i].jumlah
-             << transaksis[i].oleh << "\n";
-    }
-
-    for (int i = 0; i < 62; i++) cout << "-";
-    cout << "\nTotal transaksi: " << jmlTransaksi << "\n";
-
+    transaksiQueue.displayHistory();
     jeda();
 }
 
@@ -275,6 +260,7 @@ void menuKelola()
 
     do
     {
+        cls();
         header(" KELOLA STOK ");
         cout << "1. Barang Masuk\n";
         cout << "2. Barang Keluar\n";
@@ -286,10 +272,10 @@ void menuKelola()
 
         switch (pil)
         {
-        case 1: barangMasuk(); break;
-        case 2: barangKeluar(); break;
-        case 3: lihatStok(); break;
-        case 4: riwayatTransaksi(); break;
+        case 1: barangMasuk();       break;
+        case 2: barangKeluar();      break;
+        case 3: lihatStok();         break;
+        case 4: riwayatTransaksi();  break;
         case 0: break;
         default:
             cout << "[!] Pilihan tidak valid.\n";
