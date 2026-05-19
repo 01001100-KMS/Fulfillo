@@ -25,7 +25,10 @@ void registrasi();
 void hapusUser();
 
 // ======================== UNDO ========================
-void undoAksi(); // FIX: integrasi Stack undo untuk Admin
+void undoAksi();
+
+// ======================== LAPORAN & SORTING ========================
+void menuLaporan(); // Insertion / Bubble / Selection Sort
 
 // ======================== ROLE ========================
 void menuAdmin();
