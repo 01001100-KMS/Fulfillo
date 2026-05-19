@@ -6,6 +6,7 @@
 #include "../include/user.h"
 #include "../include/bst.h"
 #include "../include/stack.h"
+#include "../include/report.h"
 #include <iostream>
 #include <iomanip>
 #include <limits>
@@ -98,8 +99,6 @@ void tampilkanDashboard(int totalBarang, int lowStock)
 
 // ======================== INVENTORY ========================
 
-// FIX: lihatStok() sudah punya cls/header/jeda sendiri
-// tampilkanListBarang tidak perlu dobel lagi
 void tampilkanListBarang()
 {
     lihatStok();
@@ -119,7 +118,6 @@ void tampilkanLaporanStok()
     jeda();
 }
 
-// FIX: riwayatTransaksi() sudah punya cls/header/jeda sendiri
 void tampilkanHistory()
 {
     riwayatTransaksi();
@@ -254,8 +252,6 @@ void hapusUser()
 
 // ======================== UNDO ========================
 
-// FIX: undoAksi diintegrasikan ke menu Admin
-// Membalikkan aksi terakhir yang tersimpan di Stack
 void undoAksi()
 {
     cls();
@@ -288,7 +284,6 @@ void undoAksi()
     switch (aksi.tipe)
     {
     case TAMBAH_BARANG:
-        // Undo tambah barang baru → hapus dari BST
         bst.remove(aksi.barangSesudah.nama);
         cout << "\nUndo berhasil: Barang '" << aksi.barangSesudah.nama << "' dihapus.\n";
         break;
@@ -297,7 +292,6 @@ void undoAksi()
     case KURANG_STOK:
     case UPDATE_BARANG:
     {
-        // Undo perubahan stok → kembalikan ke state sebelumnya
         Barang *b = bst.searchByName(aksi.barangSebelum.nama);
         if (b)
         {
@@ -317,6 +311,42 @@ void undoAksi()
     }
 
     jeda();
+}
+
+// ======================== MENU LAPORAN (SORTING) ========================
+
+void menuLaporan()
+{
+    int pil;
+
+    do
+    {
+        cls();
+        header(" LAPORAN & PENGURUTAN ");
+
+        cout << "Sorting Method:\n\n";
+        cout << "1. Insertion Sort Stok Terendah ke Tertinggi\n";
+        cout << "   (Prioritas restock)\n\n";
+        cout << "2. Bubble Sort Harga Tertinggi ke Terendah\n";
+        cout << "   (Laporan nilai stok)\n\n";
+        cout << "3. Selection Sort Kategori A - Z\n";
+        cout << "   (Grouping per kategori)\n\n";
+        cout << "0. Kembali\n";
+
+        inputInt("\nPilihan: ", pil);
+
+        switch (pil)
+        {
+        case 1: reportSortByStok(bst);     break;
+        case 2: reportSortByHarga(bst);    break;
+        case 3: reportSortByKategori(bst); break;
+        case 0: break;
+        default:
+            cout << "[!] Pilihan tidak valid.\n";
+            jeda();
+        }
+
+    } while (pil != 0);
 }
 
 // ======================== MENU ADMIN ========================
@@ -342,18 +372,20 @@ void menuAdmin()
         cout << "2. Daftar User\n";
         cout << "3. Hapus User\n";
         cout << "4. Kelola Stok\n";
-        cout << "5. Undo Aksi Terakhir\n"; // FIX: integrasi Stack
+        cout << "5. Undo Aksi Terakhir\n";
+        cout << "6. Laporan & Pengurutan\n";   // NEW
         cout << "0. Logout\n";
 
         inputInt("\nPilihan: ", pil);
 
         switch (pil)
         {
-        case 1: registrasi();  break;
-        case 2: daftarUser();  break;
-        case 3: hapusUser();   break;
-        case 4: menuKelola();  break;
-        case 5: undoAksi();    break; // FIX: integrasi Stack
+        case 1: registrasi();   break;
+        case 2: daftarUser();   break;
+        case 3: hapusUser();    break;
+        case 4: menuKelola();   break;
+        case 5: undoAksi();     break;
+        case 6: menuLaporan();  break;         // NEW
         case 0:
             cout << "\nLogout berhasil.\n";
             break;
@@ -385,13 +417,15 @@ void menuStaff()
         cout << "Login sebagai: " << aktif->username << " [STAFF]\n\n";
 
         cout << "1. Kelola Stok\n";
+        cout << "2. Laporan & Pengurutan\n";   // NEW — staff bisa lihat laporan
         cout << "0. Logout\n";
 
         inputInt("\nPilihan: ", pil);
 
         switch (pil)
         {
-        case 1: menuKelola(); break;
+        case 1: menuKelola();  break;
+        case 2: menuLaporan(); break;          // NEW
         case 0:
             cout << "\nLogout berhasil.\n";
             break;
