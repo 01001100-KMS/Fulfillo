@@ -13,12 +13,14 @@ using namespace std;
 
 // ======================== GLOBAL DATA ========================
 
-Transaksi transaksis[MAX_TRANSAKSI];
-int jmlTransaksi = 0;
+// FIX: ganti array Transaksi[] + jmlTransaksi dengan Queue
+// FIX: tambah Stack untuk sistem undo Admin
+Queue       transaksiQueue(MAX_TRANSAKSI);
+Stack       undoStack(20);
 
 UserManager um;
-BST bst;
-User *aktif = nullptr;
+BST         bst;
+User       *aktif = nullptr;
 
 // ======================== MAIN ========================
 
@@ -43,14 +45,11 @@ int main()
         switch (pilihan)
         {
         case 1:
-            login(); // proses login (set user aktif)
+            login();
             break;
-
         case 0:
             cout << "Keluar dari aplikasi...\n";
-            return 0; // Keluar dari program langsung
-            break;
-
+            return 0;
         default:
             cout << "[!] Pilihan tidak valid.\n";
             jeda();
@@ -58,7 +57,6 @@ int main()
 
     } while (pilihan != 0);
 
-    // ================== 4. PENUTUP ==================
     cout << "Program selesai.\n";
     return 0;
 }
