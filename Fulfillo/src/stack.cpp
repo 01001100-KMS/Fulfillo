@@ -3,19 +3,14 @@
 #include <iomanip>
 using namespace std;
 
-// ============================================================
-//  Fulfillo — Stack Implementation
-//  Tanggung jawab: Orang A
-// ============================================================
+// ======================== PUSH ========================
 
-// Tambah aksi ke stack, hapus aksi terlama jika penuh
+// FIX: hapus cout debug "[STACK] Aksi disimpan" — noise di UI
 void Stack::push(Aksi aksi)
 {
     if (isFull())
     {
-        cout << "[STACK] History penuh. Aksi paling lama dihapus.\n";
-
-        // Traverse ke node sebelum yang paling bawah, lalu hapus
+        // Hapus aksi paling lama (paling bawah stack)
         if (top->next == nullptr)
         {
             delete top;
@@ -37,16 +32,15 @@ void Stack::push(Aksi aksi)
     newNode->next = top;
     top  = newNode;
     size++;
-
-    cout << "[STACK] Aksi disimpan: " << aksi.keterangan << "\n";
 }
 
-// Ambil dan hapus aksi teratas dari stack
+// ======================== POP ========================
+
+// FIX: hapus cout debug — caller yang handle pesan error
 Aksi Stack::pop()
 {
     if (isEmpty())
     {
-        cout << "[STACK] Tidak ada aksi yang bisa di-undo.\n";
         Barang kosong;
         return buatAksi(TAMBAH_BARANG, kosong, kosong, "");
     }
@@ -59,19 +53,21 @@ Aksi Stack::pop()
     return aksi;
 }
 
-// Lihat aksi teratas tanpa menghapus
+// ======================== PEEK ========================
+
+// FIX: hapus cout debug
 Aksi Stack::peek()
 {
     if (isEmpty())
     {
-        cout << "[STACK] Stack kosong.\n";
         Barang kosong;
         return buatAksi(TAMBAH_BARANG, kosong, kosong, "");
     }
     return top->data;
 }
 
-// Tampilkan semua history aksi di stack
+// ======================== DISPLAY HISTORY ========================
+
 void Stack::displayHistory()
 {
     if (isEmpty())
@@ -87,6 +83,7 @@ void Stack::displayHistory()
 
     StackNode *curr  = top;
     int        index = 1;
+
     while (curr != nullptr)
     {
         cout << "  | " << setw(2) << index << ". "
@@ -101,7 +98,8 @@ void Stack::displayHistory()
     cout << "  Total: " << size << " aksi tersimpan\n\n";
 }
 
-// Hapus semua node di stack
+// ======================== CLEAR ========================
+
 void Stack::clear()
 {
     while (!isEmpty())
